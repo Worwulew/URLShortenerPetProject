@@ -2,6 +2,8 @@ package main
 
 import (
 	"URLShortenePetPrpoject/internal/config"
+	"URLShortenePetPrpoject/internal/lib/logger/sl"
+	"URLShortenePetPrpoject/internal/storage/sqlite"
 	"log/slog"
 	"os"
 )
@@ -19,6 +21,13 @@ func main() {
 
 	log.Info("Starting url-shortener", slog.String("env", cfg.Env))
 	log.Debug("Debug is enabled")
+
+	Storage, err := sqlite.New(cfg.StoragePath)
+	if err != nil {
+		log.Error("Failed to init storage", sl.Err(err))
+		os.Exit(1)
+	}
+	_ = Storage
 }
 
 func setupLogger(env string) *slog.Logger {
