@@ -22,12 +22,13 @@ func main() {
 	log.Info("Starting url-shortener", slog.String("env", cfg.Env))
 	log.Debug("Debug is enabled")
 
-	Storage, err := sqlite.New(cfg.StoragePath)
+	storage, err := sqlite.New(cfg.StoragePath)
 	if err != nil {
 		log.Error("Failed to init storage", sl.Err(err))
 		os.Exit(1)
 	}
-	_ = Storage
+
+	_ = storage
 }
 
 func setupLogger(env string) *slog.Logger {
