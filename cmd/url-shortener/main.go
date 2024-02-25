@@ -2,8 +2,11 @@ package main
 
 import (
 	"URLShortenePetPrpoject/internal/config"
+	"URLShortenePetPrpoject/internal/http-server/middleware/mvLogger"
 	"URLShortenePetPrpoject/internal/lib/logger/sl"
 	"URLShortenePetPrpoject/internal/storage/sqlite"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"log/slog"
 	"os"
 )
@@ -29,6 +32,14 @@ func main() {
 	}
 
 	_ = storage
+
+	router := chi.NewRouter()
+
+	router.Use(middleware.RequestID)
+	router.Use(middleware.Logger)
+	router.Use(mvLogger.New(log))
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
 }
 
 func setupLogger(env string) *slog.Logger {
