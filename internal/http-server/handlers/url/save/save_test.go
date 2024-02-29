@@ -49,7 +49,7 @@ func TestNew(t *testing.T) {
 			name:      "SaveURL error",
 			alias:     "test_alias",
 			url:       "https://google.com",
-			respError: "Failed to save url",
+			respError: "internal error",
 			mockError: errors.New("unexpected error"),
 		},
 	}

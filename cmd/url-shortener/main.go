@@ -2,6 +2,8 @@ package main
 
 import (
 	"URLShortenePetPrpoject/internal/config"
+	"URLShortenePetPrpoject/internal/http-server/handlers/url/delete"
+	"URLShortenePetPrpoject/internal/http-server/handlers/url/redirect"
 	"URLShortenePetPrpoject/internal/http-server/handlers/url/save"
 	"URLShortenePetPrpoject/internal/http-server/middleware/mvLogger"
 	"URLShortenePetPrpoject/internal/lib/logger/sl"
@@ -24,7 +26,7 @@ func main() {
 
 	log := setupLogger(cfg.Env)
 
-	log.Info("Starting url-shortener", slog.String("env", cfg.Env))
+	log.Info("Starting url-shortener", slog.String("env", cfg.Env), slog.String("version", "1"))
 	log.Debug("Debug is enabled")
 
 	storage, err := sqlite.New(cfg.StoragePath)
@@ -42,6 +44,8 @@ func main() {
 	router.Use(middleware.URLFormat)
 
 	router.Post("/url", save.New(log, storage))
+	router.Get("/url/{alias}", redirect.New(log, storage))
+	router.Delete("/url/{alias}", delete.New(log, storage))
 
 	log.Info("Starting server", slog.String("address", cfg.Address))
 
