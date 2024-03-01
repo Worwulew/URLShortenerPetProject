@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-func TestNew(t *testing.T) {
+func TestSaveHandler(t *testing.T) {
 	cases := []struct {
 		name      string
 		alias     string
