@@ -5,7 +5,7 @@ import (
 	"URLShortenePetPrpoject/internal/http-server/handlers/url/redirect/mocks"
 	"URLShortenePetPrpoject/internal/lib/api"
 	"URLShortenePetPrpoject/internal/lib/logger/handlers/slogdiscard"
-	"fmt"
+	"errors"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
 	"net/http/httptest"
@@ -24,6 +24,13 @@ func TestGetHandler(t *testing.T) {
 			name:  "Success",
 			alias: "test_alias",
 			url:   "https://google.com",
+		},
+		{
+			name:      "GetURL error",
+			alias:     "test_alias",
+			url:       "https://google.com",
+			respError: "internal error",
+			mockError: errors.New("unexpected error"),
 		},
 	}
 	for _, tc := range cases {
@@ -46,10 +53,12 @@ func TestGetHandler(t *testing.T) {
 			ts := httptest.NewServer(r)
 			defer ts.Close()
 
-			fmt.Println(tc)
-
-			redirectedToURL, err := api.GetRedirect(ts.URL + "/" + tc.alias)
+			redirectedToURL, resp, err := api.GetRedirect(ts.URL + "/" + tc.alias)
 			require.NoError(t, err)
+			if redirectedToURL == "" {
+				require.Equal(t, tc.respError, resp.Error)
+				return
+			}
 			require.Equal(t, tc.url, redirectedToURL)
 		})
 	}
